@@ -14,17 +14,18 @@ _import_error = None
 
 try:
     import mediapipe as mp
-    # Verify MediaPipe has the required modules
-    # Try to access solutions.pose directly to verify it works
+    # Verify MediaPipe has the required modules by accessing them directly
+    # MediaPipe uses lazy loading, so hasattr() may not work correctly
     try:
-        _ = mp.solutions.pose
-        _ = mp.solutions.drawing_utils
+        # Try to access solutions.pose directly - this will work if MediaPipe is properly installed
+        _test_pose = mp.solutions.pose
+        _test_drawing = mp.solutions.drawing_utils
         MEDIAPIPE_AVAILABLE = True
-    except (AttributeError, TypeError) as e:
+    except (AttributeError, TypeError, ImportError) as e:
         _import_error = f"MediaPipe solutions.pose not accessible: {e}. MediaPipe version: {getattr(mp, '__version__', 'unknown')}"
         MEDIAPIPE_AVAILABLE = False
 except ImportError as e:
-    _import_error = f"MediaPipe import failed: {e}"
+    _import_error = f"MediaPipe import failed: {e}. Please install with: pip install mediapipe==0.10.14"
     MEDIAPIPE_AVAILABLE = False
 except Exception as e:
     _import_error = f"MediaPipe initialization error: {e}"
