@@ -4,8 +4,15 @@ Main interface for video upload and analysis
 """
 
 import streamlit as st
-import cv2
-import numpy as np
+
+# Import dependencies with error handling for Streamlit Cloud
+try:
+    import cv2
+    import numpy as np
+except ImportError as e:
+    st.error(f"Missing required dependencies. Please ensure requirements.txt is installed: {e}")
+    st.stop()
+
 import os
 import sys
 import tempfile
