@@ -1,0 +1,4 @@
+video_path,label,notes
+sample_correct.mp4,1,Example of correct form
+sample_incorrect.mp4,0,Example of incorrect form
+
