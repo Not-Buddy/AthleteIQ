@@ -18,14 +18,26 @@ try:
     # MediaPipe uses lazy loading, so hasattr() may not work correctly
     try:
         # Try to access solutions.pose directly - this will work if MediaPipe is properly installed
-        _test_pose = mp.solutions.pose
-        _test_drawing = mp.solutions.drawing_utils
-        MEDIAPIPE_AVAILABLE = True
+        # For newer versions, we need to import from mediapipe.python.solutions
+        if hasattr(mp, 'solutions'):
+            _test_pose = mp.solutions.pose
+            _test_drawing = mp.solutions.drawing_utils
+            MEDIAPIPE_AVAILABLE = True
+        else:
+            # Try alternative import path for newer MediaPipe versions
+            try:
+                from mediapipe.python.solutions import pose as mp_pose
+                from mediapipe.python.solutions import drawing_utils as mp_drawing_utils
+                MEDIAPIPE_AVAILABLE = True
+                mp.solutions = type('obj', (object,), {'pose': mp_pose, 'drawing_utils': mp_drawing_utils})()
+            except ImportError:
+                _import_error = f"MediaPipe solutions not found. Version: {getattr(mp, '__version__', 'unknown')}"
+                MEDIAPIPE_AVAILABLE = False
     except (AttributeError, TypeError, ImportError) as e:
         _import_error = f"MediaPipe solutions.pose not accessible: {e}. MediaPipe version: {getattr(mp, '__version__', 'unknown')}"
         MEDIAPIPE_AVAILABLE = False
 except ImportError as e:
-    _import_error = f"MediaPipe import failed: {e}. Please install with: pip install mediapipe==0.10.14"
+    _import_error = f"MediaPipe import failed: {e}. Please install with: pip install mediapipe>=0.10.30"
     MEDIAPIPE_AVAILABLE = False
 except Exception as e:
     _import_error = f"MediaPipe initialization error: {e}"
@@ -49,7 +61,7 @@ class PoseExtractor:
         if not MEDIAPIPE_AVAILABLE or mp is None:
             error_msg = _import_error if _import_error else "MediaPipe is not installed"
             raise ImportError(
-                f"{error_msg}. Please install it with: pip install mediapipe==0.10.14"
+                f"{error_msg}. Please install it with: pip install mediapipe>=0.10.30"
             )
         
         # If we got here, MediaPipe is available and solutions.pose is accessible
