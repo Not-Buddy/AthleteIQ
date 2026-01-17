@@ -19,6 +19,9 @@ COPY requirements_unified.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements_unified.txt
 
+# Verify and reinstall mediapipe if needed to ensure proper installation
+RUN python -c "import mediapipe as mp; print('MediaPipe version:', mp.__version__)" || pip install --force-reinstall mediapipe>=0.10.30
+
 # Copy application code
 COPY . .
 
