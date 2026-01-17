@@ -24,6 +24,3 @@ COPY . .
 
 # Expose port
 EXPOSE 8501
-
-# Run the application
-CMD ["streamlit", "run", "sports_form_analysis/app/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
