@@ -1,0 +1,1 @@
+web: streamlit run sports_form_analysis/app/app.py --server.port=$PORT --server.address=0.0.0.0
