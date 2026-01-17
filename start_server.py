@@ -9,6 +9,10 @@ import sys
 from pathlib import Path
 import subprocess
 
+# Set environment variables for CPU-only mode before any imports
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
+os.environ['MEDIAPIPE_DISABLE_GPU'] = '1'
+
 # Add the sports_form_analysis directory to the path
 current_dir = Path(__file__).parent
 sys.path.insert(0, str(current_dir))

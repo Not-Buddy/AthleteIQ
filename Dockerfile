@@ -1,5 +1,14 @@
 FROM python:3.10-slim
 
+# Set environment variables for CPU-only mode
+ENV OPENBLAS_NUM_THREADS=1
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV VECLIB_MAXIMUM_THREADS=1
+ENV NUMEXPR_NUM_THREADS=1
+ENV CUDA_VISIBLE_DEVICES=""
+ENV MEDIAPIPE_DISABLE_GPU=1
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     libgl1 \
@@ -13,17 +22,15 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy requirements
-COPY requirements_unified.txt .
+# Copy pinned requirements
+COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements_unified.txt
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install specific MediaPipe version known to work with solutions module
-RUN pip uninstall -y mediapipe opencv-python opencv-python-headless || true
-RUN pip install --no-cache-dir opencv-python-headless==4.8.1.78
-RUN pip install --no-cache-dir mediapipe==0.10.7
-RUN python -c "import mediapipe as mp; print('MediaPipe version:', mp.__version__); print('Solutions module accessible:', hasattr(mp, 'solutions')); print('Pose available:', hasattr(mp.solutions, 'pose'))""
+# Verify MediaPipe installation
+RUN python -c "import mediapipe as mp; print('MediaPipe version:', mp.__version__); print('Solutions module accessible:', hasattr(mp, 'solutions')); print('Pose available:', hasattr(getattr(mp, 'solutions', {}), 'pose'))""
 
 # Copy application code
 COPY . .
