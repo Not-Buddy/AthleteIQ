@@ -36,4 +36,4 @@ RUN python -c "import mediapipe as mp; print('MediaPipe version:', mp.__version_
 COPY . .
 
 # Expose port
-EXPOSE 8501
+EXPOSE 8080
